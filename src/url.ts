@@ -20,7 +20,7 @@ export class Url {
   }
 
   get displayName(): string {
-    let name = this.path.slice(1);
+    let name = this.path.slice(this.path.lastIndexOf("/") + 1);
     if (name.endsWith(".md")) {
       name = name.slice(0, -3);
     } else if (name.endsWith(".html")) {

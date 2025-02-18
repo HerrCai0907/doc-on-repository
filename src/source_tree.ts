@@ -62,7 +62,7 @@ class MultipleLevelList {
       snippets.push("</ul>");
     };
     buildList(this.tree);
-    return snippets.join("");
+    return snippets.join("\n");
   }
 }
 
