@@ -1,6 +1,8 @@
 import { readFileSync } from "fs";
 import { Renderer } from "./render.js";
-import { marked } from "marked";
+import markdownit from "markdown-it";
+
+const md = markdownit();
 
 export class MarkdownRenderer implements Renderer {
   match(filePath: string): boolean {
@@ -8,6 +10,6 @@ export class MarkdownRenderer implements Renderer {
   }
   async render(filePath: string): Promise<string> {
     const markdownContent = readFileSync(filePath, "utf-8");
-    return await marked.parse(markdownContent);
+    return md.render(markdownContent);
   }
 }
