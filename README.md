@@ -14,7 +14,7 @@ It is helpful to prevent inconsistencies between code and documentation and give
   - [ ] render mermaid charting
   - [ ] render draw.io
 - Real-Time
-  - [ ] sync file change to html
+  - [x] sync file change to html
   - [ ] allow edit in html
 
 ## Usage

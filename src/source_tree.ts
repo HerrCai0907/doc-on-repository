@@ -1,10 +1,11 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { watch } from "node:fs/promises";
-import { basename, extname, relative } from "node:path";
+import { relative } from "node:path";
 import assert from "node:assert";
 import { Url, UrlMap } from "./url.js";
 import { Renderer } from "./render.js";
 import chalk from "chalk";
+import { injectSseScript, sse } from "./plugin/sse.js";
 
 class MultipleLevelListNode {
   public attr: Attr | null = null;
@@ -112,11 +113,15 @@ export class SourceTree {
         if (eventType == "rename") {
           console.log(chalk.yellow(`File ${filename} has been rename / add / remove. rebuild tree.`));
           this.buildTree();
-          return;
-        }
-        if (eventType == "change" && filename != null) {
+          sse.notify({ kind: "rebuild" });
+        } else if (eventType == "change" && filename != null) {
           console.log(chalk.yellow(`File ${filename} has been changed. clean cache.`));
-          this.pages.get(new Url("/" + filename))?.html.clean();
+          const url = new Url("/" + filename);
+          this.pages.get(url)?.html.clean();
+          if (url.isIndexUrl()) {
+            sse.notify({ kind: "update", path: "/" });
+          }
+          sse.notify({ kind: "update", path: url.path });
         }
       }
     })();
@@ -158,7 +163,7 @@ export class SourceTree {
           list.add(attr);
         }
       });
-      return `<hr><h1>Contents</h1>` + list.toHtml();
+      return `<hr><h1>Contents</h1>` + injectSseScript() + list.toHtml();
     });
   }
 

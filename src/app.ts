@@ -2,10 +2,8 @@ import express from "express";
 import { SourceTree } from "./source_tree.js";
 import { Url } from "./url.js";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { projectRoot } from "./root_path.js";
+import { sse, SseEvent } from "./plugin/sse.js";
 
 export function start(port: number, sourceTree: SourceTree) {
   const app: express.Express = express();
@@ -14,9 +12,31 @@ export function start(port: number, sourceTree: SourceTree) {
     res.send(await sourceTree.getIndexPage());
   });
 
+  // sse
+  app.get("/updates", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    const handle = sse.registerListener((event: SseEvent) => {
+      res.write(`data:${JSON.stringify(event)}\n\n`);
+    });
+    req.on("close", () => {
+      sse.cancelListener(handle);
+      res.end();
+    });
+  });
+
+  // inject code
+  app.get("/doc-on-repository/*", (req, res) => {
+    const reqPath = decodeURIComponent(req.path).slice("/doc-on-repository".length);
+    const file = path.normalize(`${projectRoot}/dist/web${reqPath}`);
+    console.log(`get path: ${reqPath} from ${file}`);
+    res.sendFile(file);
+  });
+  // reveal.js
   app.get("/reveal.js/*", (req, res) => {
     const reqPath = decodeURIComponent(req.path);
-    const file = path.normalize(`${__dirname}/../node_modules${reqPath}`);
+    const file = path.normalize(`${projectRoot}/node_modules${reqPath}`);
     console.log(`get path: ${reqPath} from ${file}`);
     res.sendFile(file);
   });

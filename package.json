@@ -3,15 +3,14 @@
   "version": "0.0.0",
   "description": "Use multiple formats to write and manage documents in a git-managed repository",
   "bin": {
-    "doc_on_repository_server": "dist/index.js"
+    "doc_on_repository_server": "dist/server/index.js"
   },
-  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "start": "node dist/index.js",
-    "dev": "nodemon --watch 'dist/**/*' --exec 'node dist/index.js --root demo'"
+    "build": "tsc -p src && tsc -p web",
+    "watch": "concurrently \"tsc -w -p src\" \"tsc -w -p web\"",
+    "start": "node dist/server/index.js --root demo",
+    "dev": "nodemon --watch 'dist/**/*' --exec 'npm start'"
   },
   "dependencies": {
     "@types/express": "^5.0.0",
@@ -40,6 +39,7 @@
   "license": "MPL-2.0",
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
+    "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.1"
   }
