@@ -11,6 +11,11 @@ It is helpful to prevent inconsistencies between code and documentation and give
   - [x] create index page automatically
   - [x] render markdown (by [markdown-it](https://github.com/markdown-it/markdown-it))
   - [x] render ppt (by [reveal.js](https://revealjs.com/))
+  - [ ] render mermaid charting
+  - [ ] render draw.io
+- Real-Time
+  - [ ] sync file change to html
+  - [ ] allow edit in html
 
 ## Usage
 
@@ -35,4 +40,4 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the MPL-2.0 License. See the LICENSE file for more details.
